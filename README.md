@@ -49,6 +49,19 @@ This is the v2 rewrite of an earlier project (Timing侠 / Timer v1), now rebuilt
 
 ---
 
+## Setup
+
+Requires Node 22+ and pnpm 10+.
+
+```bash
+pnpm install
+pnpm dev          # start dev server at http://localhost:3000
+pnpm test         # run Vitest suite
+pnpm tsc --noEmit # type-check
+```
+
+---
+
 ## Author
 
 Built by [Conrad](https://github.com/Conradgui) as part of his AIPM portfolio for Spring 2026 recruiting.
