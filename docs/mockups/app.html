@@ -1064,21 +1064,61 @@
     const orangeTpl = document.getElementById('orangeTpl');
     const rainContainer = document.getElementById('orangeRain');
 
-    function dropOne(template) {
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function dropOne(template, position, delay) {
       const el = template.content.firstElementChild.cloneNode(true);
-      el.style.left = (Math.random() * 88 + 6) + '%';
+      el.style.left = position + '%';
       el.style.setProperty('--rotate-end', (Math.random() * 360 - 180) + 'deg');
-      el.style.animationDelay = (Math.random() * 1500) + 'ms';
-      el.style.animationDuration = (4200 + Math.random() * 1300) + 'ms';
+      el.style.animationDelay = delay + 'ms';
+      el.style.animationDuration = (4000 + Math.random() * 1800) + 'ms';
+      // Size variation ±15% for natural variety
+      const isBlossom = template === blossomTpl;
+      const baseSize = isBlossom ? 28 : 24;
+      const size = baseSize * (0.85 + Math.random() * 0.30);
+      el.style.width = size + 'px';
+      el.style.height = size + 'px';
       rainContainer.appendChild(el);
-      setTimeout(() => el.remove(), 7500);
+      setTimeout(() => el.remove(), 8500);
     }
 
     function triggerOrangeRain() {
-      const blossoms = 9;  // 8-10
-      const oranges = 3;   // 2-3
-      for (let i = 0; i < blossoms; i++) dropOne(blossomTpl);
-      for (let i = 0; i < oranges; i++) dropOne(orangeTpl);
+      const total = 18;            // 14 blossoms + 4 oranges
+      const blossomCount = 14;
+
+      // Jittered grid: horizontal positions — guarantees even spread, no clustering
+      const slotWidth = 96 / total;
+      const slots = [];
+      for (let i = 0; i < total; i++) {
+        const slotStart = 2 + i * slotWidth;
+        slots.push(slotStart + Math.random() * slotWidth * 0.7);
+      }
+      shuffle(slots);
+
+      // Jittered grid: time delays — staggered, no simultaneous burst
+      const timeWindow = 2500;
+      const timeSlot = timeWindow / total;
+      const delays = [];
+      for (let i = 0; i < total; i++) {
+        delays.push(i * timeSlot + Math.random() * timeSlot * 0.6);
+      }
+
+      // Mix blossoms & oranges so oranges aren't clumped
+      const types = [];
+      for (let i = 0; i < total; i++) {
+        types.push(i < blossomCount ? blossomTpl : orangeTpl);
+      }
+      shuffle(types);
+
+      for (let i = 0; i < total; i++) {
+        dropOne(types[i], slots[i], delays[i]);
+      }
     }
 
     document.getElementById('rainBtn').addEventListener('click', triggerOrangeRain);
