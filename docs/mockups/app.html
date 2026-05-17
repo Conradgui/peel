@@ -86,14 +86,52 @@
     }
 
     .app {
-      max-width: 1280px;
+      max-width: 1440px;
       margin: 0 auto;
+      width: 100%;
       height: calc(100vh - 38px);
       display: flex;
       flex-direction: column;
-      padding: 28px 64px 32px;
+      padding: clamp(20px, 4vh, 40px) clamp(32px, 6vw, 80px);
       transition: background-color 300ms var(--ease-natural);
       position: relative;
+    }
+
+    /* Ambient warm glow softens the empty space on ultrawide screens */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(
+        ellipse 1200px 700px at 50% 25%,
+        rgba(254, 215, 170, 0.20),
+        transparent 65%
+      );
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* Responsive: tablet */
+    @media (max-width: 900px) {
+      .today-page {
+        grid-template-columns: 1fr;
+        gap: 32px;
+        overflow-y: auto;
+      }
+      .heatmap-section { margin-top: 16px; }
+    }
+
+    /* Responsive: mobile */
+    @media (max-width: 640px) {
+      header { grid-template-columns: auto 1fr; gap: 12px; margin-bottom: 32px; }
+      .brand { display: none; }
+      .nav-segmented button { padding: 6px 14px; font-size: 13px; }
+      .mode-toggle-wrapper { gap: 6px; }
+      .mode-toggle-label { font-size: 11px; }
+      .timer-display { font-size: 64px; }
+      .reflection-display .total { font-size: 64px; }
+      .now-page { gap: 24px; }
+      .reflection-mosaic { height: 60px; }
     }
 
     .app.pomodoro-mode { background: var(--pomodoro-tint); }
@@ -706,7 +744,7 @@
     .raindrop {
       position: absolute;
       top: -40px;
-      animation: fall 2500ms var(--ease-natural) forwards;
+      animation: fall 4500ms var(--ease-natural) forwards;
       will-change: transform, opacity;
     }
 
@@ -1030,15 +1068,15 @@
       const el = template.content.firstElementChild.cloneNode(true);
       el.style.left = (Math.random() * 88 + 6) + '%';
       el.style.setProperty('--rotate-end', (Math.random() * 360 - 180) + 'deg');
-      el.style.animationDelay = (Math.random() * 700) + 'ms';
-      el.style.animationDuration = (2300 + Math.random() * 600) + 'ms';
+      el.style.animationDelay = (Math.random() * 1500) + 'ms';
+      el.style.animationDuration = (4200 + Math.random() * 1300) + 'ms';
       rainContainer.appendChild(el);
-      setTimeout(() => el.remove(), 4000);
+      setTimeout(() => el.remove(), 7500);
     }
 
     function triggerOrangeRain() {
-      const blossoms = 5;  // 4-6
-      const oranges = 2;   // 1-2
+      const blossoms = 9;  // 8-10
+      const oranges = 3;   // 2-3
       for (let i = 0; i < blossoms; i++) dropOne(blossomTpl);
       for (let i = 0; i < oranges; i++) dropOne(orangeTpl);
     }
