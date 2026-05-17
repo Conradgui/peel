@@ -419,9 +419,12 @@ v1 仅 H5 + Hard No 跨设备同步 → localStorage。
 **Schema C: 按 entity type 分 key**
 
 ```ts
-'peel-records': { [date: string]: Record[] }   // 按日期分组的 records
-'peel-todos':   { [date: string]: Todo[] }     // 按日期分组的 todos
+'peel-records': { [date: string]: Record[] }   // date = formatDate(record.startTime, localTz)
+'peel-todos':   { [date: string]: Todo[] }     // date = todo.date (用户创建时指定)
 'peel-settings': Settings
+
+// formatDate(timestamp) → 'YYYY-MM-DD' in user's local timezone
+// 跨午夜归类：用 startTime 派生 date，确保归到"开始那一天"（§ 5.5）
 ```
 
 **选 C 的理由**：性能 + 实现复杂度最优平衡。Reflection 按周拼图的查询路径最直接（只读 `peel-records` 一个 key）。
