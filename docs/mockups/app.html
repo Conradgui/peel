@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Peel — Visual Mockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ===========================================
+       Design tokens — sourced from Peel PRD § 7
+       =========================================== */
+    :root {
+      /* Peel Orange */
+      --orange-light: #FED7AA;
+      --orange: #FB923C;
+      --orange-deep: #EA580C;
+
+      /* Background (warm cream) */
+      --cream-white: #FAFAF7;
+      --pure-white: #FFFFFF;
+      --off-white: #F5F5F0;
+
+      /* Mode tints (extra-light) */
+      --pomodoro-tint: #FEF3E7;
+      --rest-tint: #E8F5F0;
+
+      /* Text (warm grays, not pure black) */
+      --text-primary: #1F1F1B;
+      --text-secondary: #52524D;
+      --text-tertiary: #A3A3A0;
+
+      /* Borders */
+      --border: #E5E5DF;
+      --border-subtle: #F0F0EB;
+
+      /* Shadows (extra-light, no heavy blur) */
+      --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-lifted: 0 4px 16px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.05);
+
+      /* Type */
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Geist Mono', monospace;
+
+      /* Motion */
+      --ease-natural: cubic-bezier(0.32, 0.72, 0, 1);
+    }
+
+    /* Reset */
+    *, *::before, *::after { box-sizing: border-box; }
+    * { margin: 0; padding: 0; }
+
+    html, body {
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--cream-white);
+      color: var(--text-primary);
+      font-size: 16px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      letter-spacing: -0.005em;
+    }
+
+    /* ===========================================
+       App shell
+       =========================================== */
+    .mockup-note {
+      background: var(--off-white);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 10px 20px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-secondary);
+      letter-spacing: 0.02em;
+    }
+
+    .mockup-note .accent {
+      color: var(--orange-deep);
+      font-weight: 600;
+    }
+
+    .app {
+      max-width: 1280px;
+      margin: 0 auto;
+      height: calc(100vh - 38px);
+      display: flex;
+      flex-direction: column;
+      padding: 28px 64px 32px;
+      transition: background-color 300ms var(--ease-natural);
+      position: relative;
+    }
+
+    .app.pomodoro-mode { background: var(--pomodoro-tint); }
+    .app.rest-mode { background: var(--rest-tint); }
+
+    /* ===========================================
+       Header
+       =========================================== */
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      margin-bottom: 56px;
+    }
+
+    .brand {
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+      text-transform: lowercase;
+      font-family: var(--font-mono);
+    }
+
+    .brand .dot {
+      color: var(--orange);
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    /* Segmented control */
+    .nav-segmented {
+      display: inline-flex;
+      gap: 2px;
+      padding: 4px;
+      background: var(--off-white);
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .nav-segmented button {
+      background: transparent;
+      border: none;
+      padding: 8px 22px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 150ms;
+      letter-spacing: 0.01em;
+    }
+
+    .nav-segmented button:hover { color: var(--text-primary); }
+
+    .nav-segmented button.active {
+      background: var(--pure-white);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-subtle);
+    }
+
+    /* Mode toggle (right side, only on Now) */
+    .mode-toggle-wrapper {
+      justify-self: end;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .mode-toggle-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-tertiary);
+      transition: color 200ms;
+    }
+
+    .mode-toggle-label.active { color: var(--text-primary); }
+
+    .toggle-switch {
+      position: relative;
+      width: 42px;
+      height: 24px;
+      background: var(--border);
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: background 250ms var(--ease-natural);
+    }
+
+    .toggle-switch.on { background: var(--orange); }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background: var(--pure-white);
+      border-radius: 9999px;
+      box-shadow: var(--shadow-soft);
+      transition: transform 250ms var(--ease-natural);
+    }
+
+    .toggle-switch.on::after { transform: translateX(18px); }
+
+    /* ===========================================
+       View transitions
+       =========================================== */
+    main {
+      flex: 1;
+      position: relative;
+      min-height: 0;
+    }
+
+    .view {
+      display: none;
+      height: 100%;
+    }
+
+    .view.active {
+      display: flex;
+      flex-direction: column;
+      animation: fadeIn 320ms var(--ease-natural);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===========================================
+       Now page
+       =========================================== */
+    .now-page {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 32px;
+      position: relative;
+    }
+
+    .task-name {
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .task-name .pomodoro-icon {
+      font-size: 20px;
+      display: none;
+    }
+
+    .pomodoro-mode .task-name .pomodoro-icon { display: inline; }
+
+    .timer-display {
+      font-family: var(--font-mono);
+      font-size: 96px;
+      font-weight: 600;
+      letter-spacing: -0.05em;
+      line-height: 1.0;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .timer-target {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-tertiary);
+      margin-top: -16px;
+      letter-spacing: 0.02em;
+      display: none;
+    }
+
+    .pomodoro-mode .timer-target { display: block; }
+
+    .timer-controls {
+      display: flex;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .btn {
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 11px 24px;
+      border: 1px solid var(--border);
+      background: var(--pure-white);
+      color: var(--text-primary);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 150ms;
+      box-shadow: var(--shadow-subtle);
+      letter-spacing: 0.01em;
+    }
+
+    .btn:hover {
+      border-color: var(--text-tertiary);
+      box-shadow: var(--shadow-soft);
+      transform: translateY(-1px);
+    }
+
+    .btn.primary {
+      background: var(--orange);
+      color: var(--pure-white);
+      border-color: var(--orange);
+    }
+
+    .btn.primary:hover {
+      background: var(--orange-deep);
+      border-color: var(--orange-deep);
+    }
+
+    .now-footer {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      color: var(--text-tertiary);
+      letter-spacing: 0.04em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .now-footer strong {
+      color: var(--text-secondary);
+      font-weight: 500;
+      font-family: var(--font-mono);
+    }
+
+    .now-footer .accent { color: var(--orange); }
+
+    .corner-peel {
+      position: absolute;
+      bottom: 16px;
+      right: 0;
+      width: 40px;
+      height: 40px;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    /* ===========================================
+       Today page
+       =========================================== */
+    .today-page {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      padding: 4px 0 0;
+      min-height: 0;
+    }
+
+    .today-col {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      min-height: 0;
+    }
+
+    .col-header {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .todo-list { display: flex; flex-direction: column; gap: 4px; }
+
+    .todo-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 150ms;
+    }
+
+    .todo-item:hover { background: var(--off-white); }
+
+    .todo-checkbox {
+      width: 18px;
+      height: 18px;
+      border: 1.5px solid var(--text-tertiary);
+      border-radius: 9999px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      transition: all 200ms var(--ease-natural);
+    }
+
+    .todo-checkbox.done {
+      background: var(--orange);
+      border-color: var(--orange);
+      position: relative;
+    }
+
+    .todo-checkbox.done::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -55%);
+      color: var(--pure-white);
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .todo-content { flex: 1; }
+
+    .todo-text {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+      letter-spacing: -0.005em;
+    }
+
+    .todo-item.done .todo-text {
+      color: var(--text-tertiary);
+      text-decoration: line-through;
+      text-decoration-thickness: 1px;
+    }
+
+    .todo-meta {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      letter-spacing: 0.02em;
+    }
+
+    .todo-add {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: color 150ms;
+      margin-top: 4px;
+    }
+
+    .todo-add:hover { color: var(--orange-deep); }
+
+    .heatmap-section {
+      margin-top: auto;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .heatmap-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .heatmap-subtitle {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 14px;
+      letter-spacing: -0.005em;
+    }
+
+    .heatmap-bars {
+      display: flex;
+      gap: 3px;
+      align-items: flex-end;
+      height: 48px;
+    }
+
+    .heatmap-bar {
+      flex: 1;
+      background: var(--orange-light);
+      border-radius: 3px;
+      min-height: 4px;
+    }
+
+    .heatmap-bar.peak { background: var(--orange-deep); }
+
+    .time-blocks { display: flex; flex-direction: column; gap: 10px; }
+
+    .time-block {
+      padding: 14px 16px;
+      background: var(--pure-white);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      box-shadow: var(--shadow-subtle);
+      transition: all 150ms;
+    }
+
+    .time-block:hover {
+      box-shadow: var(--shadow-soft);
+      border-color: var(--border);
+    }
+
+    .time-block-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+
+    .time-block-name {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-primary);
+      letter-spacing: -0.005em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .time-block.pomodoro .time-block-name::after {
+      content: '🍅';
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
+    .time-block-duration {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--orange-deep);
+    }
+
+    .time-block-time {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      font-family: var(--font-mono);
+      letter-spacing: 0.02em;
+    }
+
+    .today-total {
+      margin-top: auto;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-subtle);
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-align: right;
+    }
+
+    .today-total strong {
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-weight: 500;
+      margin-left: 4px;
+    }
+
+    /* ===========================================
+       Reflection page
+       =========================================== */
+    .reflection-page {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 32px;
+      max-width: 560px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .reflection-nav {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: 0.02em;
+    }
+
+    .reflection-nav button {
+      background: transparent;
+      border: 1px solid var(--border);
+      width: 32px;
+      height: 32px;
+      border-radius: 9999px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text-secondary);
+      transition: all 150ms;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: inherit;
+    }
+
+    .reflection-nav button:hover {
+      border-color: var(--text-secondary);
+      color: var(--text-primary);
+    }
+
+    .reflection-display { text-align: center; }
+
+    .reflection-display .total {
+      font-family: var(--font-mono);
+      font-size: 88px;
+      font-weight: 600;
+      letter-spacing: -0.05em;
+      line-height: 1.0;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .reflection-display .avg {
+      font-size: 14px;
+      color: var(--text-tertiary);
+      margin-top: 12px;
+      letter-spacing: 0.02em;
+      font-family: var(--font-mono);
+    }
+
+    .reflection-mosaic {
+      display: flex;
+      gap: 6px;
+      align-items: flex-end;
+      width: 100%;
+      height: 78px;
+    }
+
+    .mosaic-block {
+      background: var(--orange);
+      border-radius: 6px;
+      min-height: 14px;
+    }
+
+    .mosaic-block.deep { background: var(--orange-deep); }
+    .mosaic-block.light { background: var(--orange-light); }
+
+    .reflection-quote {
+      font-size: 16px;
+      color: var(--text-secondary);
+      text-align: center;
+      letter-spacing: -0.005em;
+      line-height: 1.5;
+    }
+
+    .reflection-quote strong { color: var(--text-primary); font-weight: 600; }
+    .reflection-quote .accent { color: var(--orange); }
+
+    .reflection-meta {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      display: flex;
+      gap: 28px;
+      letter-spacing: 0.02em;
+    }
+
+    .reflection-meta span { display: flex; align-items: center; gap: 6px; }
+
+    .reflection-granularity {
+      display: flex;
+      gap: 4px;
+      margin-top: 4px;
+      padding: 3px;
+      background: var(--off-white);
+      border-radius: 9999px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .reflection-granularity button {
+      background: transparent;
+      border: none;
+      padding: 6px 16px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 150ms;
+      font-family: inherit;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+
+    .reflection-granularity button.active {
+      background: var(--pure-white);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-subtle);
+    }
+
+    /* ===========================================
+       Orange rain
+       =========================================== */
+    .orange-rain-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 50;
+    }
+
+    .raindrop {
+      position: absolute;
+      top: -40px;
+      animation: fall 2500ms var(--ease-natural) forwards;
+      will-change: transform, opacity;
+    }
+
+    .raindrop.blossom { width: 28px; height: 28px; }
+    .raindrop.orange { width: 24px; height: 24px; }
+
+    @keyframes fall {
+      0% { transform: translateY(-40px) rotate(0deg); opacity: 0; }
+      8% { opacity: 0.92; }
+      90% { opacity: 0.85; }
+      100% {
+        transform: translateY(calc(100vh + 40px)) rotate(var(--rotate-end, 200deg));
+        opacity: 0.2;
+      }
+    }
+
+    /* ===========================================
+       Demo controls (mockup only)
+       =========================================== */
+    .demo-toolbar {
+      position: fixed;
+      bottom: 24px; right: 24px;
+      display: flex;
+      gap: 8px;
+      z-index: 60;
+    }
+
+    .demo-btn {
+      background: var(--pure-white);
+      border: 1px solid var(--border);
+      padding: 10px 18px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      border-radius: 9999px;
+      cursor: pointer;
+      box-shadow: var(--shadow-soft);
+      transition: all 150ms;
+      letter-spacing: 0.01em;
+    }
+
+    .demo-btn:hover {
+      color: var(--orange-deep);
+      border-color: var(--orange-light);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-lifted);
+    }
+
+    /* Hidden templates */
+    template { display: none; }
+  </style>
+</head>
+<body>
+  <div class="mockup-note">
+    <span class="accent">Peel · Visual Mockup v0.1.0</span> · 顶部 segmented 切三页 · Now 页右上 toggle 切 Normal / Pomodoro · 右下角触发橘子雨
+  </div>
+
+  <div class="app" id="app">
+    <header>
+      <div class="brand">peel<span class="dot">.</span></div>
+
+      <nav class="nav-segmented" id="nav">
+        <button data-view="now" class="active">Now</button>
+        <button data-view="today">Today</button>
+        <button data-view="reflection">Reflection</button>
+      </nav>
+
+      <div class="mode-toggle-wrapper" id="modeToggle">
+        <span class="mode-toggle-label active" id="labelNormal">Normal</span>
+        <div class="toggle-switch" id="switch" title="Normal ↔ Pomodoro"></div>
+        <span class="mode-toggle-label" id="labelPomodoro">Pomodoro</span>
+      </div>
+    </header>
+
+    <main>
+      <!-- ============ Now ============ -->
+      <div id="view-now" class="view active">
+        <div class="now-page">
+          <div class="task-name">
+            <span class="pomodoro-icon">🍅</span>
+            <span>写 PRD § 6 章节</span>
+          </div>
+
+          <div class="timer-display" id="timerDisplay">00:23:14</div>
+          <div class="timer-target" id="timerTarget">25:00 倒计时</div>
+
+          <div class="timer-controls">
+            <button class="btn">⏸&nbsp;&nbsp;暂停</button>
+            <button class="btn primary">⏹&nbsp;&nbsp;结束</button>
+          </div>
+
+          <div class="now-footer">
+            今天已专注 <strong>4h 12min</strong> <span class="accent">✦</span>
+          </div>
+
+          <svg class="corner-peel" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+            <path d="M 8 28 Q 8 8 28 8 Q 48 8 52 28 Q 36 22 28 28 Q 22 36 28 52 Q 8 48 8 28 Z"
+                  fill="#FB923C" stroke="#EA580C" stroke-width="1" opacity="0.7"/>
+            <path d="M 28 28 Q 24 32 22 38 Q 18 44 14 44" stroke="#FFFFFF" stroke-width="1.2" fill="none" opacity="0.5"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- ============ Today ============ -->
+      <div id="view-today" class="view">
+        <div class="today-page">
+          <div class="today-col">
+            <div class="col-header">今天的计划 · 3</div>
+
+            <div class="todo-list">
+              <div class="todo-item">
+                <div class="todo-checkbox"></div>
+                <div class="todo-content">
+                  <div class="todo-text">写 PRD § 6 章节</div>
+                  <div class="todo-meta">目标 1h</div>
+                </div>
+              </div>
+              <div class="todo-item">
+                <div class="todo-checkbox"></div>
+                <div class="todo-content">
+                  <div class="todo-text">看完 Karpathy 视频</div>
+                  <div class="todo-meta">目标 30min</div>
+                </div>
+              </div>
+              <div class="todo-item done">
+                <div class="todo-checkbox done"></div>
+                <div class="todo-content">
+                  <div class="todo-text">写每日总结</div>
+                  <div class="todo-meta">完成 ✦</div>
+                </div>
+              </div>
+              <div class="todo-add">+&nbsp;&nbsp;加任务</div>
+            </div>
+
+            <div class="heatmap-section">
+              <div class="heatmap-title">早晨建议</div>
+              <div class="heatmap-subtitle">过去 7 天，高效时段集中在 <strong>9-11 点</strong></div>
+              <div class="heatmap-bars">
+                <div class="heatmap-bar" style="height:6px"></div>
+                <div class="heatmap-bar" style="height:6px"></div>
+                <div class="heatmap-bar" style="height:6px"></div>
+                <div class="heatmap-bar" style="height:6px"></div>
+                <div class="heatmap-bar" style="height:8px"></div>
+                <div class="heatmap-bar" style="height:10px"></div>
+                <div class="heatmap-bar" style="height:14px"></div>
+                <div class="heatmap-bar" style="height:20px"></div>
+                <div class="heatmap-bar peak" style="height:36px"></div>
+                <div class="heatmap-bar peak" style="height:44px"></div>
+                <div class="heatmap-bar peak" style="height:38px"></div>
+                <div class="heatmap-bar" style="height:28px"></div>
+                <div class="heatmap-bar" style="height:14px"></div>
+                <div class="heatmap-bar" style="height:12px"></div>
+                <div class="heatmap-bar" style="height:22px"></div>
+                <div class="heatmap-bar" style="height:30px"></div>
+                <div class="heatmap-bar" style="height:32px"></div>
+                <div class="heatmap-bar" style="height:24px"></div>
+                <div class="heatmap-bar" style="height:14px"></div>
+                <div class="heatmap-bar" style="height:18px"></div>
+                <div class="heatmap-bar" style="height:24px"></div>
+                <div class="heatmap-bar" style="height:16px"></div>
+                <div class="heatmap-bar" style="height:8px"></div>
+                <div class="heatmap-bar" style="height:6px"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="today-col">
+            <div class="col-header">今天的时间块 · 4</div>
+
+            <div class="time-blocks">
+              <div class="time-block">
+                <div class="time-block-header">
+                  <div class="time-block-name">写代码</div>
+                  <div class="time-block-duration">1h 2m</div>
+                </div>
+                <div class="time-block-time">09:30 — 10:32</div>
+              </div>
+
+              <div class="time-block pomodoro">
+                <div class="time-block-header">
+                  <div class="time-block-name">Peel PRD</div>
+                  <div class="time-block-duration">47m</div>
+                </div>
+                <div class="time-block-time">10:32 — 11:19</div>
+              </div>
+
+              <div class="time-block">
+                <div class="time-block-header">
+                  <div class="time-block-name">午餐</div>
+                  <div class="time-block-duration">20m</div>
+                </div>
+                <div class="time-block-time">12:15 — 12:35</div>
+              </div>
+
+              <div class="time-block pomodoro">
+                <div class="time-block-header">
+                  <div class="time-block-name">学 Next.js</div>
+                  <div class="time-block-duration">1h 45m</div>
+                </div>
+                <div class="time-block-time">14:00 — 15:45</div>
+              </div>
+            </div>
+
+            <div class="today-total">今天累计<strong>4h 12min</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ Reflection ============ -->
+      <div id="view-reflection" class="view">
+        <div class="reflection-page">
+          <div class="reflection-nav">
+            <button title="昨天">◀</button>
+            <span>2026 年 5 月 17 日 · 今天</span>
+            <button title="明天">▶</button>
+          </div>
+
+          <div class="reflection-display">
+            <div class="total">4h 12min</div>
+            <div class="avg">本周日均 3h 45min</div>
+          </div>
+
+          <div class="reflection-mosaic">
+            <div class="mosaic-block" style="flex:62; height:50px"></div>
+            <div class="mosaic-block deep" style="flex:47; height:40px"></div>
+            <div class="mosaic-block light" style="flex:20; height:22px"></div>
+            <div class="mosaic-block" style="flex:105; height:72px"></div>
+            <div class="mosaic-block light" style="flex:18; height:20px"></div>
+          </div>
+
+          <div class="reflection-quote">
+            今天有 <strong>6 个</strong>时间块被认真度过 <span class="accent">✦</span>
+          </div>
+
+          <div class="reflection-meta">
+            <span>🍊 今天 2 场橘子雨</span>
+            <span>🍅 2 个番茄完成</span>
+          </div>
+
+          <div class="reflection-granularity">
+            <button class="active">按天</button>
+            <button>按周</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ===== Templates for orange rain (safe DOM cloning, no innerHTML) ===== -->
+  <template id="blossomTpl">
+    <svg class="raindrop blossom" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(20 20)">
+        <g transform="rotate(0)"><ellipse cx="0" cy="-10" rx="5.5" ry="10" fill="#FFFFFF" stroke="#E5E5DF" stroke-width="0.5"/></g>
+        <g transform="rotate(72)"><ellipse cx="0" cy="-10" rx="5.5" ry="10" fill="#FFFFFF" stroke="#E5E5DF" stroke-width="0.5"/></g>
+        <g transform="rotate(144)"><ellipse cx="0" cy="-10" rx="5.5" ry="10" fill="#FFFFFF" stroke="#E5E5DF" stroke-width="0.5"/></g>
+        <g transform="rotate(216)"><ellipse cx="0" cy="-10" rx="5.5" ry="10" fill="#FFFFFF" stroke="#E5E5DF" stroke-width="0.5"/></g>
+        <g transform="rotate(288)"><ellipse cx="0" cy="-10" rx="5.5" ry="10" fill="#FFFFFF" stroke="#E5E5DF" stroke-width="0.5"/></g>
+        <circle r="3" fill="#FB923C"/>
+      </g>
+    </svg>
+  </template>
+
+  <template id="orangeTpl">
+    <svg class="raindrop orange" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="15" cy="17" r="10" fill="#FB923C" stroke="#EA580C" stroke-width="0.7"/>
+      <path d="M 14 6 Q 12 3 16 4 Q 18 5 17 8 Q 15 9 14 7 Z" fill="#16a34a"/>
+      <path d="M 11 13 Q 12 11 14 12" stroke="#FFFFFF" stroke-width="0.6" fill="none" opacity="0.5"/>
+    </svg>
+  </template>
+
+  <!-- Orange rain layer -->
+  <div class="orange-rain-container" id="orangeRain"></div>
+
+  <!-- Demo controls (not part of product) -->
+  <div class="demo-toolbar">
+    <button class="demo-btn" id="rainBtn">演示橘子雨 🍊</button>
+  </div>
+
+  <script>
+    /* ============ Nav switching ============ */
+    const navButtons = document.querySelectorAll('.nav-segmented button');
+    const views = document.querySelectorAll('.view');
+    const modeToggleWrapper = document.getElementById('modeToggle');
+
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.view;
+        navButtons.forEach(b => b.classList.remove('active'));
+        views.forEach(v => v.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('view-' + target).classList.add('active');
+        modeToggleWrapper.style.visibility = target === 'now' ? 'visible' : 'hidden';
+      });
+    });
+
+    /* ============ Mode toggle ============ */
+    const switchEl = document.getElementById('switch');
+    const app = document.getElementById('app');
+    const labelNormal = document.getElementById('labelNormal');
+    const labelPomodoro = document.getElementById('labelPomodoro');
+    const timerDisplay = document.getElementById('timerDisplay');
+
+    let isPomodoro = false;
+
+    switchEl.addEventListener('click', () => {
+      isPomodoro = !isPomodoro;
+      switchEl.classList.toggle('on', isPomodoro);
+      app.classList.toggle('pomodoro-mode', isPomodoro);
+      labelNormal.classList.toggle('active', !isPomodoro);
+      labelPomodoro.classList.toggle('active', isPomodoro);
+      timerDisplay.textContent = isPomodoro ? '24:37' : '00:23:14';
+    });
+
+    /* ============ Orange rain (template-clone, no innerHTML) ============ */
+    const blossomTpl = document.getElementById('blossomTpl');
+    const orangeTpl = document.getElementById('orangeTpl');
+    const rainContainer = document.getElementById('orangeRain');
+
+    function dropOne(template) {
+      const el = template.content.firstElementChild.cloneNode(true);
+      el.style.left = (Math.random() * 88 + 6) + '%';
+      el.style.setProperty('--rotate-end', (Math.random() * 360 - 180) + 'deg');
+      el.style.animationDelay = (Math.random() * 700) + 'ms';
+      el.style.animationDuration = (2300 + Math.random() * 600) + 'ms';
+      rainContainer.appendChild(el);
+      setTimeout(() => el.remove(), 4000);
+    }
+
+    function triggerOrangeRain() {
+      const blossoms = 5;  // 4-6
+      const oranges = 2;   // 1-2
+      for (let i = 0; i < blossoms; i++) dropOne(blossomTpl);
+      for (let i = 0; i < oranges; i++) dropOne(orangeTpl);
+    }
+
+    document.getElementById('rainBtn').addEventListener('click', triggerOrangeRain);
+
+    /* ============ Live timer demo ============ */
+    let seconds = 23 * 60 + 14;
+    setInterval(() => {
+      if (!isPomodoro) {
+        seconds++;
+        const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+        const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+        const s = (seconds % 60).toString().padStart(2, '0');
+        timerDisplay.textContent = h + ':' + m + ':' + s;
+      } else {
+        const parts = timerDisplay.textContent.split(':');
+        let totalSec = parseInt(parts[0]) * 60 + parseInt(parts[1]) - 1;
+        if (totalSec < 0) totalSec = 25 * 60 - 1;
+        const newM = Math.floor(totalSec / 60).toString().padStart(2, '0');
+        const newS = (totalSec % 60).toString().padStart(2, '0');
+        timerDisplay.textContent = newM + ':' + newS;
+      }
+    }, 1000);
+  </script>
+</body>
+</html>
