@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
-import { addRecord, getRecordsByDate, getRecordsInRange, deleteRecord, updateRecord } from '@/storage/recordStorage'
+import { addRecord, getRecordsByDate, getRecordsInRange, deleteRecord, updateRecord, saveRecordsForDate } from '@/storage/recordStorage'
 import { formatDate, daysAgo } from '@/domain/time'
 import type { Record } from '@/domain/types'
 
@@ -32,6 +32,11 @@ export function useRecords(date?: string) {
     refresh()
   }, [targetDate, refresh])
 
+  const reorderRecords = useCallback((items: Record[]) => {
+    saveRecordsForDate(targetDate, items)
+    refresh()
+  }, [targetDate, refresh])
+
   const getRange = useCallback((start: string, end: string) => {
     return getRecordsInRange(start, end)
   }, [])
@@ -42,5 +47,5 @@ export function useRecords(date?: string) {
     return getRecordsInRange(weekAgo, today)
   }, [])
 
-  return { records, add, update, remove, refresh, getRange, getLast7Days }
+  return { records, add, update, remove, reorderRecords, refresh, getRange, getLast7Days }
 }

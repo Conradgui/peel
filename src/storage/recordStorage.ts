@@ -64,3 +64,9 @@ export function deleteRecord(id: string, date: string): void {
     write(data)
   }
 }
+
+export function saveRecordsForDate(date: string, recs: Record[]): void {
+  const data = read()
+  data[date] = recs
+  write(data)
+}

@@ -3,11 +3,12 @@
 import { useSettings } from '@/hooks/useSettings'
 import { formatDate } from '@/domain/time'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 
 export function SettingsPage() {
   const { settings, update } = useSettings()
   const [storageSize, setStorageSize] = useState(0)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Calculate total localStorage size
   useEffect(() => {
@@ -177,15 +178,16 @@ export function SettingsPage() {
         )}
 
         <div className="settings-row justify-end mt-2 gap-4">
-          <label className="btn cursor-pointer inline-flex items-center justify-center">
+          <input
+            type="file"
+            ref={fileInputRef}
+            accept=".json"
+            style={{ display: 'none' }}
+            onChange={handleImport}
+          />
+          <button className="btn" onClick={() => fileInputRef.current?.click()}>
             导入 JSON 备份
-            <input
-              type="file"
-              accept=".json"
-              style={{ display: 'none' }}
-              onChange={handleImport}
-            />
-          </label>
+          </button>
           <button className="btn primary" onClick={handleExport}>
             导出 JSON 备份
           </button>

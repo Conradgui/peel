@@ -1,16 +1,25 @@
 'use client'
 
 import { useState } from 'react'
-import { useRecords } from '@/hooks/useRecords'
-import { useTodos } from '@/hooks/useTodos'
 import { formatDuration, formatTime, formatDurationLong } from '@/domain/time'
 import { computeTotalDuration } from '@/domain/planner'
-import type { Record } from '@/domain/types'
+import type { Record, Todo } from '@/domain/types'
 
-export function TimeBlockList() {
-  const { records, update, remove } = useRecords()
-  const { todos } = useTodos()
+interface Props {
+  records: Record[]
+  todos: Todo[]
+  updateRecord: (record: Record) => void
+  removeRecord: (id: string) => void
+  reorderRecords: (records: Record[]) => void
+}
 
+export function TimeBlockList({
+  records,
+  todos,
+  updateRecord,
+  removeRecord,
+  reorderRecords,
+}: Props) {
   const totalSeconds = computeTotalDuration(records)
 
   // Edit Modal State
@@ -32,7 +41,7 @@ export function TimeBlockList() {
 
   const handleSaveRecord = () => {
     if (editingRecord) {
-      update({
+      updateRecord({
         ...editingRecord,
         label: modalLabel.trim() || '未命名专注',
         linkedTodoId: modalLinkedTodoId || null,
@@ -43,7 +52,7 @@ export function TimeBlockList() {
 
   const handleDeleteRecord = () => {
     if (editingRecord) {
-      remove(editingRecord.id)
+      removeRecord(editingRecord.id)
       closeEditModal()
     }
   }
@@ -64,11 +73,37 @@ export function TimeBlockList() {
                 className={`time-block ${r.tag === 'pomodoro' ? 'pomodoro' : ''}`}
                 draggable={true}
                 onDragStart={(e) => {
-                  e.dataTransfer.setData('text/plain', r.id)
+                  e.dataTransfer.setData('text/record-id', r.id)
+                  e.dataTransfer.setData('text/drag-type', 'record')
                   e.currentTarget.classList.add('dragging')
                 }}
                 onDragEnd={(e) => {
                   e.currentTarget.classList.remove('dragging')
+                }}
+                onDragOver={(e) => {
+                  e.preventDefault()
+                  e.currentTarget.classList.add('drag-over')
+                }}
+                onDragLeave={(e) => {
+                  e.currentTarget.classList.remove('drag-over')
+                }}
+                onDrop={(e) => {
+                  e.preventDefault()
+                  e.currentTarget.classList.remove('drag-over')
+                  const dragType = e.dataTransfer.getData('text/drag-type')
+                  if (dragType === 'record') {
+                    const draggedRecordId = e.dataTransfer.getData('text/record-id')
+                    if (draggedRecordId && draggedRecordId !== r.id) {
+                      const draggedIndex = records.findIndex(rec => rec.id === draggedRecordId)
+                      const targetIndex = records.findIndex(rec => rec.id === r.id)
+                      if (draggedIndex >= 0 && targetIndex >= 0) {
+                        const newRecords = [...records]
+                        const [draggedItem] = newRecords.splice(draggedIndex, 1)
+                        newRecords.splice(targetIndex, 0, draggedItem)
+                        reorderRecords(newRecords)
+                      }
+                    }
+                  }
                 }}
                 onClick={() => openEditModal(r)}
               >

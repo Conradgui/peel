@@ -1,16 +1,29 @@
 'use client'
 
 import { useState } from 'react'
-import { useTodos } from '@/hooks/useTodos'
-import { useRecords } from '@/hooks/useRecords'
 import { computeTodoDuration } from '@/domain/planner'
 import { formatDuration } from '@/domain/time'
+import type { Todo, Record } from '@/domain/types'
 
-import type { Todo } from '@/domain/types'
+interface Props {
+  todos: Todo[]
+  records: Record[]
+  addTodo: (text: string, estimatedDuration?: number) => void
+  updateTodo: (todo: Todo) => void
+  deleteTodo: (id: string) => void
+  updateRecord: (record: Record) => void
+  reorderTodos: (todos: Todo[]) => void
+}
 
-export function TodoList() {
-  const { todos, addTodo, updateTodo, deleteTodo } = useTodos()
-  const { records, update: updateRecord } = useRecords()
+export function TodoList({
+  todos,
+  records,
+  addTodo,
+  updateTodo,
+  deleteTodo,
+  updateRecord,
+  reorderTodos,
+}: Props) {
   const [newText, setNewText] = useState('')
   const [adding, setAdding] = useState(false)
 
@@ -82,6 +95,15 @@ export function TodoList() {
             <div
               key={todo.id}
               className={`todo-item ${todo.status === 'done' ? 'done' : ''}`}
+              draggable={true}
+              onDragStart={(e) => {
+                e.dataTransfer.setData('text/todo-id', todo.id)
+                e.dataTransfer.setData('text/drag-type', 'todo')
+                e.currentTarget.classList.add('dragging')
+              }}
+              onDragEnd={(e) => {
+                e.currentTarget.classList.remove('dragging')
+              }}
               onDragOver={(e) => {
                 e.preventDefault()
                 e.currentTarget.classList.add('drag-over')
@@ -92,11 +114,26 @@ export function TodoList() {
               onDrop={(e) => {
                 e.preventDefault()
                 e.currentTarget.classList.remove('drag-over')
-                const recordId = e.dataTransfer.getData('text/plain')
-                if (recordId) {
-                  const record = records.find(r => r.id === recordId)
-                  if (record) {
-                    updateRecord({ ...record, linkedTodoId: todo.id })
+                const dragType = e.dataTransfer.getData('text/drag-type')
+                if (dragType === 'record') {
+                  const recordId = e.dataTransfer.getData('text/record-id')
+                  if (recordId) {
+                    const record = records.find(r => r.id === recordId)
+                    if (record) {
+                      updateRecord({ ...record, linkedTodoId: todo.id })
+                    }
+                  }
+                } else if (dragType === 'todo') {
+                  const draggedTodoId = e.dataTransfer.getData('text/todo-id')
+                  if (draggedTodoId && draggedTodoId !== todo.id) {
+                    const draggedIndex = todos.findIndex(t => t.id === draggedTodoId)
+                    const targetIndex = todos.findIndex(t => t.id === todo.id)
+                    if (draggedIndex >= 0 && targetIndex >= 0) {
+                      const newTodos = [...todos]
+                      const [draggedItem] = newTodos.splice(draggedIndex, 1)
+                      newTodos.splice(targetIndex, 0, draggedItem)
+                      reorderTodos(newTodos)
+                    }
                   }
                 }
               }}

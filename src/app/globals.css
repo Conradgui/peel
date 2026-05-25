@@ -1525,6 +1525,12 @@ main {
 .time-block {
   cursor: pointer;
   cursor: grab;
+  transition: all 150ms;
+}
+
+.time-block.drag-over {
+  border: 1px dashed var(--color-peel-orange) !important;
+  background: var(--color-cream-off) !important;
 }
 
 .time-block.dragging {

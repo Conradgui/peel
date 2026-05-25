@@ -76,3 +76,9 @@ export function completeTodo(id: string, date: string): void {
 export function getAllTodos(): TodosByDate {
   return read()
 }
+
+export function saveTodosForDate(date: string, items: Todo[]): void {
+  const data = read()
+  data[date] = items
+  write(data)
+}

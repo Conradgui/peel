@@ -7,6 +7,7 @@ import {
   updateTodo as storageUpdateTodo,
   deleteTodo as storageDeleteTodo,
   completeTodo as storageCompleteTodo,
+  saveTodosForDate,
 } from '@/storage/todoStorage'
 import { formatDate } from '@/domain/time'
 import type { Todo } from '@/domain/types'
@@ -44,5 +45,10 @@ export function useTodos(date?: string) {
     refresh()
   }, [targetDate, refresh])
 
-  return { todos, addTodo, updateTodo, deleteTodo, completeTodo, refresh }
+  const reorderTodos = useCallback((items: Todo[]) => {
+    saveTodosForDate(targetDate, items)
+    refresh()
+  }, [targetDate, refresh])
+
+  return { todos, addTodo, updateTodo, deleteTodo, completeTodo, reorderTodos, refresh }
 }
