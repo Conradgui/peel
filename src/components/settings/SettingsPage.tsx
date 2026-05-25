@@ -185,7 +185,7 @@ export function SettingsPage() {
             style={{ display: 'none' }}
             onChange={handleImport}
           />
-          <button className="btn" onClick={() => fileInputRef.current?.click()}>
+          <button className="btn primary" onClick={() => fileInputRef.current?.click()}>
             导入 JSON 备份
           </button>
           <button className="btn primary" onClick={handleExport}>

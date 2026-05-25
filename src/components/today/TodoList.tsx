@@ -8,7 +8,7 @@ import type { Todo, Record } from '@/domain/types'
 interface Props {
   todos: Todo[]
   records: Record[]
-  addTodo: (text: string, estimatedDuration?: number) => void
+  addTodo: (text: string, estimatedDuration?: number) => Todo
   updateTodo: (todo: Todo) => void
   deleteTodo: (id: string) => void
   updateRecord: (record: Record) => void
@@ -83,7 +83,34 @@ export function TodoList({
     <>
       <div className="col-header">今天的计划 · {todos.length}</div>
 
-      <div className="todo-list">
+      <div
+        className="todo-list"
+        onDragOver={(e) => {
+          e.preventDefault()
+          e.currentTarget.classList.add('list-drag-over')
+        }}
+        onDragLeave={(e) => {
+          e.currentTarget.classList.remove('list-drag-over')
+        }}
+        onDrop={(e) => {
+          e.preventDefault()
+          e.currentTarget.classList.remove('list-drag-over')
+          const dragType = e.dataTransfer.getData('text/drag-type')
+          if (dragType === 'record') {
+            const recordId = e.dataTransfer.getData('text/record-id')
+            if (recordId) {
+              const record = records.find(r => r.id === recordId)
+              if (record) {
+                const todoText = record.label.trim() || '未命名专注'
+                const newTodo = addTodo(todoText)
+                if (newTodo && newTodo.id) {
+                  updateRecord({ ...record, linkedTodoId: newTodo.id })
+                }
+              }
+            }
+          }
+        }}
+      >
         {todos.length === 0 && !adding && (
           <div className="todo-empty-state">
             今天还没安排，加点什么吗？
@@ -113,6 +140,7 @@ export function TodoList({
               }}
               onDrop={(e) => {
                 e.preventDefault()
+                e.stopPropagation()
                 e.currentTarget.classList.remove('drag-over')
                 const dragType = e.dataTransfer.getData('text/drag-type')
                 if (dragType === 'record') {
