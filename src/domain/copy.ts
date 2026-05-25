@@ -15,7 +15,7 @@ export function pickCopy(
   ctx: CopyContext = {},
   recentlyUsed: string[] = [],
 ): string {
-  const pool = (templates as Record<string, unknown>)[category] as string[] | undefined
+  const pool = templates[category] as string[] | undefined
   if (!pool || pool.length === 0) return ''
 
   const available = pool.filter(t => !recentlyUsed.includes(t))

@@ -2,6 +2,7 @@
 
 import { useSettings } from '@/hooks/useSettings'
 import { formatDate } from '@/domain/time'
+import type { Settings } from '@/domain/types'
 import Link from 'next/link'
 import { useEffect, useState, useRef } from 'react'
 
@@ -135,7 +136,7 @@ export function SettingsPage() {
             value={settings.orangeRainInterval}
             onChange={e => {
               const val = e.target.value
-              update('orangeRainInterval', val === 'off' ? 'off' : (parseInt(val) as any))
+              update('orangeRainInterval', val === 'off' ? 'off' : (parseInt(val, 10) as Settings['orangeRainInterval']))
             }}
           >
             <option value="15">每 15 分钟</option>
@@ -148,11 +149,11 @@ export function SettingsPage() {
 
         <div className="settings-row">
           <label className="settings-label" htmlFor="rain-sound">开启橘子雨声音</label>
-          <div className="flex items-center">
+          <div className="settings-checkbox-wrapper">
             <input
               id="rain-sound"
               type="checkbox"
-              className="w-4 h-4 accent-[#FB923C] cursor-pointer"
+              className="settings-checkbox"
               checked={settings.orangeRainSound}
               onChange={e => update('orangeRainSound', e.target.checked)}
             />
@@ -166,7 +167,7 @@ export function SettingsPage() {
         
         <div className="settings-row">
           <span className="settings-label">当前本地存储占用</span>
-          <span className="font-mono text-sm">
+          <span className="settings-storage-size">
             {(storageSize / 1024).toFixed(2)} KB
           </span>
         </div>
@@ -177,7 +178,7 @@ export function SettingsPage() {
           </div>
         )}
 
-        <div className="settings-row justify-end mt-2 gap-4">
+        <div className="settings-row actions">
           <input
             type="file"
             ref={fileInputRef}

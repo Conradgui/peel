@@ -7,7 +7,6 @@
 
 import type { Record, TimerSession } from './types'
 import { createId } from './types'
-import { formatDate } from './time'
 
 /**
  * Start a new timer session. Persisted to activeTimerStorage

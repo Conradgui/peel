@@ -1,5 +1,6 @@
 'use client'
 
+import { useMemo } from 'react'
 import { TodoList } from './TodoList'
 import { TimeBlockList } from './TimeBlockList'
 import { HeatmapHourly } from './HeatmapHourly'
@@ -8,7 +9,9 @@ import { useRecords } from '@/hooks/useRecords'
 
 export function TodayPage() {
   const { todos, addTodo, updateTodo, deleteTodo, reorderTodos } = useTodos()
-  const { records, update: updateRecord, remove: removeRecord, reorderRecords } = useRecords()
+  const { records, update: updateRecord, remove: removeRecord, reorderRecords, getLast7Days } = useRecords()
+
+  const recentRecords = useMemo(() => getLast7Days(), [records, getLast7Days])
 
   return (
     <div className="today-page">
@@ -22,7 +25,7 @@ export function TodayPage() {
           updateRecord={updateRecord}
           reorderTodos={reorderTodos}
         />
-        <HeatmapHourly />
+        <HeatmapHourly recentRecords={recentRecords} />
       </div>
       <TimeBlockList
         records={records}

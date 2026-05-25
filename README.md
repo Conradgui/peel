@@ -1,69 +1,96 @@
-# Peel
+# Peel 🍊
 
-> Time management tool that records reality first, then helps you re-plan with confidence.
+> **Peel back the assumptions about your time.**
+> 先记录真实发生的时间（Reality），再校准成可信的计划（Plan）。
 
----
+Peel 是一款专为**效率焦虑型学生与职场新人**设计的个人专注管理与时间预期校准工具。
 
-## Vision
-
-Peel is a time management tool for people who keep over-planning their days, fail to deliver, and lose trust in their own time estimates.
-
-The core paradigm is **record-first, plan-second** — log what actually happened, then rebuild realistic expectations about how you spend your time.
-
-The name is borrowed from a citrus peel: you peel back the assumptions to see what's really inside your day.
+与市面上传统的“强计划式”待办清单或单纯的“时间记账”应用不同，Peel 提出了 **Reality-First (现实优先)** 的定位——用真实的专注时间块帮用户纠正对时间的假设，重建对自己预期的控制感。
 
 ---
 
-## Status
+## 🌟 核心功能
 
-🚧 In active development. PRD drafting (May 2026). See [`docs/PRD.md`](./docs/PRD.md).
+### 1. Now 页（极简专注计时器）
+- **双模切换**：支持常规**正向计时**与**番茄钟倒计时**。右上角 Toggle Switch 丝滑阻尼过渡，切换时底色分别呈现温润米白与番茄暖橘调。
+- **Todo 内置联动**：点击输入框即可拉取今日计划并关联计时，在计时开始时，关联的 Todo 状态会自动变更为 `in_progress`；完成计时后，时间记录会自动挂载到对应的 Todo 下，多段专注时长自动求和，防止修改记录造成的数据不一致。
+- **极致留白**：首屏留白占比 60% 以上，帮助用户隔绝喧嚣，专注当下。
 
-This is the v2 rewrite of an earlier project (Timing侠 / Timer v1), now rebuilt on Next.js for design quality and web reach. The v1 codebase (Vue + UNIapp) is archived; v2 starts fresh on a stack chosen for design ceiling — Next.js + Tailwind + shadcn — keeping only the framework-agnostic domain logic and tests from v1.
+### 2. Today 页（今天全景：计划 vs 现实）
+- **分栏对照**：左栏显示“今天的计划”（待办任务与目标耗时），右栏显示“今天的时间块”（真实的专注序列与拼图卡片）。
+- **早晨建议**：底部基于过去 7 天的历史专注数据，以 24 小时热力条图直观呈现你的“高效时段”，不替你做决策，只引导你进行合理的计划安排。
+- **单屏无滚动**：严格遵循 `viewport-as-page` 设计纪律。当时间块卡片超出屏幕时，系统将**自动合并相邻相同 label 的块**，通过降低密度实现内容不溢出，免除滚动的割裂感。
 
----
+### 3. Reflection 页（晚上复盘与历史）
+- **一屏一故事**：以卡片缝隙自然拼接成的一日“时间拼图”，用人性化、不带对比与评判的温暖文案为今天的努力作结。
+- **橘子雨统计**：统计并记录用户“今天度过了多少个认真专注的时刻”及“下了几场橘子雨”。
+- **按日/周翻页**：支持一键在“按天”与“按周”颗粒度之间切换。按周模式下一屏展示 7 个迷你时间拼图，方便进行周维度的复盘。
 
-## Tech stack (planned)
-
-- **Framework**: Next.js 16 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS v4 + shadcn/ui
-- **Testing**: Vitest
-- **Target**: H5 (web) only — no native mobile, no WeChat Mini Program in v1
-
----
-
-## Design language
-
-- **Color**: warm orange `#F97316` (citrus accent only — not a background)
-- **Typography**: Inter
-- **Aesthetic**: minimal · fresh · natural · a touch of zen
-- **Anchors**: Things 3 (skeleton) · Linear (motion) · Notion (breath)
-- **Visual mood**: "fresh, natural, citrus-bouquet, lightly warm"
-- **Brand motif**: orange/citrus — used only as a delight accent (logo, favicon, empty states, achievements), never bleeding into main UI structure
+### 4. 🍊 橘子雨 (Orange Rain) 特效
+- 当普通计时累计达到设定的阀值（可调为 15/30/45/60 分钟），或番茄钟顺利结束时，屏幕上会飘落下由“**白色柑橘花**”与“**小橘子符号**”混排的轻盈雪花特效，时长约 6.5 - 8 秒，这是剥开时间 assumptive 外衣后送给用户的隐秘奖赏。
 
 ---
 
-## Documentation
+## 🎨 设计规范与美学
 
-- [`docs/PRD.md`](./docs/PRD.md) — Product Requirements Document
-
----
-
-## Setup
-
-Requires Node 22+ and pnpm 10+.
-
-```bash
-pnpm install
-pnpm dev          # start dev server at http://localhost:3000
-pnpm test         # run Vitest suite
-pnpm tsc --noEmit # type-check
-```
+Peel 在设计上摒弃了工业感与低质感的红绿蓝配色，从柑橘的成熟中汲取了独有的极简与自然禅意：
+- **主色调**：Peel Orange (`#FB923C`)、深橙 (`#EA580C`) 以及 hover 浅橘 (`#FED7AA`)。
+- **背景色**：温和的米白 (`#FAFAF7`) 作为主背景，取代刺眼的纯白。
+- **排版字体**：标题与正文采用 Inter，计时器字号最大可达 80px，数字部分使用等宽字体（JetBrains Mono / Geist Mono）以防止字符抖动。
+- **交互过渡**：使用了自然水流缓出阻尼曲线 `cubic-bezier(0.32, 0.72, 0, 1)`，极具品质感。
+- **单屏限制**：所有三大主要视图严格锁定在单屏（PC 1440×900 / 手机 375×812 最小视口）以内，没有下拉抽屉和页面级滚动。
 
 ---
 
-## Author
+## 🛠️ 技术实现与架构
 
-Built by [Conrad](https://github.com/Conradgui) as part of his AIPM portfolio for Spring 2026 recruiting.
+### 技术栈
+- **核心框架**: React 19 / Next.js 16 (App Router)
+- **样式系统**: Vanilla CSS (极轻量，100% 掌控设计变量与 HSL 调色体系)
+- **脚本管理**: pnpm (pnpm-workspace)
+- **单元测试**: Vitest + TypeScript
 
-Development assisted by [Claude](https://claude.com) (Anthropic).
+### 本地优先 (Local-First) 存储
+所有数据直接同步读写于用户的本地浏览器 LocalStorage 中，数据体积经过精细预估（即使每天记录 50 条，一年也仅占 2.7MB），超过 4MB 时会友好提示用户备份。
+- **`peel-records`**: 按日期归档的专注历史。跨午夜计时按 `startTime` 归档。
+- **`peel-todos`**: 用户创建的计划待办。
+- **`peel-settings`**: 用户的配置选项（番茄钟时长、橘子雨频率、音效开关等）。
+- **数据导出/导入**: 设置页支持一键导出人类可读的 `peel-data-YYYY-MM-DD.json` 备份文件，并支持安全上传导入恢复。
+
+---
+
+## 🚀 开发者指南
+
+### 环境要求
+- **Node.js**: 22+
+- **pnpm**: 10+
+
+### 快速启动
+1. **安装依赖**
+   ```bash
+   pnpm install
+   ```
+
+2. **启动本地开发服务器**
+   ```bash
+   pnpm dev
+   ```
+   启动后，浏览器打开 `http://localhost:3000` 即可访问。
+
+3. **运行 Vitest 单元测试**
+   ```bash
+   pnpm test
+   ```
+   包含 domain 纯函数、时区转换、热力图计算、localStorage 读写器等的 67 个测试用例。
+
+4. **进行静态类型检查**
+   ```bash
+   pnpm tsc --noEmit
+   ```
+
+---
+
+## 📝 开源许可
+
+本项目由 Conrad 在 2026 年春季设计与实现。
+设计致敬 Things 3 与 Linear 的精致动效与布局。

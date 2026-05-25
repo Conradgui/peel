@@ -256,7 +256,12 @@ export function TodoList({
                   value={modalEst}
                   onChange={e => {
                     const v = e.target.value
-                    setModalEst(v === '' ? '' : parseInt(v, 10))
+                    if (v === '') {
+                      setModalEst('')
+                    } else {
+                      const parsed = parseInt(v, 10)
+                      setModalEst(isNaN(parsed) ? '' : parsed)
+                    }
                   }}
                   onKeyDown={e => { if (e.key === 'Enter') handleSaveTodo() }}
                   placeholder="无预估时间"

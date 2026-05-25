@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import {
-  addTodo as storagAddTodo,
+  addTodo as storageAddTodo,
   getTodosByDate,
   updateTodo as storageUpdateTodo,
   deleteTodo as storageDeleteTodo,
@@ -25,7 +25,7 @@ export function useTodos(date?: string) {
   }, [refresh])
 
   const addTodo = useCallback((text: string, estimatedDuration?: number) => {
-    const todo = storagAddTodo(text, targetDate, estimatedDuration)
+    const todo = storageAddTodo(text, targetDate, estimatedDuration)
     refresh()
     return todo
   }, [targetDate, refresh])

@@ -37,6 +37,19 @@ export function NowPage({ isPomodoro, onRainTrigger, onBreakChange }: Props) {
     onBreakChange?.(isBreakActive)
   }, [isBreakActive, onBreakChange])
 
+  // Side effect handler for Pomodoro phase completion
+  useEffect(() => {
+    if (pomodoroState?.shouldCreateRecord) {
+      const record = stop('pomodoro')
+      if (record) {
+        add(record)
+        onRainTrigger()
+      }
+      // Reset the creation flag
+      setPomodoroState(prev => prev ? { ...prev, shouldCreateRecord: false } : null)
+    }
+  }, [pomodoroState?.shouldCreateRecord, stop, add, onRainTrigger])
+
   // Pomodoro tick
   useEffect(() => {
     if (!pomodoroState || pomodoroState.phase === 'done') {
@@ -50,16 +63,7 @@ export function NowPage({ isPomodoro, onRainTrigger, onBreakChange }: Props) {
     pomodoroIntervalRef.current = setInterval(() => {
       setPomodoroState(prev => {
         if (!prev) return null
-        const next = tick(prev)
-        if (next.shouldCreateRecord) {
-          // Work phase ended — create a pomodoro record
-          const record = stop('pomodoro')
-          if (record) {
-            add(record)
-            onRainTrigger()
-          }
-        }
-        return next
+        return tick(prev)
       })
     }, 1000)
 
@@ -117,8 +121,10 @@ export function NowPage({ isPomodoro, onRainTrigger, onBreakChange }: Props) {
   }, [pomodoroState])
 
   const handleContinueAfterBreak = useCallback(() => {
-    // Start a new work phase
-    if (pomodoroState && pomodoroState.phase === 'done') {
+    if (!pomodoroState) return
+    if (pomodoroState.phase === 'break') {
+      setPomodoroState(skipBreak(pomodoroState))
+    } else if (pomodoroState.phase === 'done') {
       setPomodoroState(null)
     }
   }, [pomodoroState])

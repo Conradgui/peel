@@ -17,7 +17,7 @@ export function DayMosaic({ records }: { records: Record[] }) {
         const heightPx = Math.min(74, Math.max(14, r.duration / 60))
         const flexValue = Math.max(20, r.duration / 60)
         const variant =
-          r.duration > 3600 ? '' : r.duration > 1800 ? 'deep' : 'light'
+          r.duration > 3600 ? 'deep' : r.duration > 1800 ? '' : 'light'
         return (
           <div
             key={r.id}

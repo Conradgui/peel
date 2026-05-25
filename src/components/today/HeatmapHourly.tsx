@@ -1,16 +1,19 @@
 'use client'
 
-import { useRecords } from '@/hooks/useRecords'
+import { useMemo } from 'react'
+import type { Record } from '@/domain/types'
 import { computeHourlyHeatmap, findPeakHours, formatPeakHours } from '@/domain/heatmap'
 
-export function HeatmapHourly() {
-  const { getLast7Days } = useRecords()
-  const recent = getLast7Days()
-  const heatmap = computeHourlyHeatmap(recent)
-  const peaks = findPeakHours(heatmap, 3)
-  const max = Math.max(...heatmap, 1) // avoid division by zero
+interface Props {
+  recentRecords: Record[]
+}
 
-  if (recent.length === 0) {
+export function HeatmapHourly({ recentRecords }: Props) {
+  const heatmap = useMemo(() => computeHourlyHeatmap(recentRecords), [recentRecords])
+  const peaks = useMemo(() => findPeakHours(heatmap, 3), [heatmap])
+  const max = useMemo(() => Math.max(...heatmap, 1), [heatmap]) // avoid division by zero
+
+  if (recentRecords.length === 0) {
     return (
       <div className="heatmap-section">
         <div className="heatmap-title">早晨建议</div>

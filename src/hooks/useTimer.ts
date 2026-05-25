@@ -102,8 +102,9 @@ export function useTimer() {
 
   const updateLabel = useCallback((newLabel: string) => {
     if (sessionRef.current) {
-      sessionRef.current.label = newLabel
-      saveActiveTimer(sessionRef.current)
+      const updated = { ...sessionRef.current, label: newLabel }
+      sessionRef.current = updated
+      saveActiveTimer(updated)
       setState(s => ({ ...s, label: newLabel }))
     }
   }, [])

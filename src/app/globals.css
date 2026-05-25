@@ -855,6 +855,8 @@ main {
   border: 1px solid var(--color-peel-border-subtle);
   border-radius: 12px;
   box-shadow: var(--shadow-subtle);
+  cursor: pointer;
+  cursor: grab;
   transition: all 150ms;
 }
 
@@ -958,9 +960,17 @@ main {
   font-family: inherit;
 }
 
-.reflection-nav button:hover {
+.reflection-nav button:hover:not(:disabled) {
   border-color: var(--color-text-secondary);
   color: var(--color-text-primary);
+}
+
+.reflection-nav button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  border-color: var(--color-peel-border-subtle);
+  color: var(--color-text-tertiary);
+  pointer-events: none;
 }
 
 .reflection-display {
@@ -1205,6 +1215,7 @@ main {
   gap: 32px;
   padding: 40px 0;
   height: 100%;
+  overflow-y: auto;
   animation: fadeIn 320ms var(--ease-natural);
 }
 
@@ -1262,6 +1273,29 @@ main {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+}
+
+.settings-row.actions {
+  justify-content: flex-end;
+  margin-top: 8px;
+  gap: 16px;
+}
+
+.settings-checkbox-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.settings-checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-peel-orange);
+  cursor: pointer;
+}
+
+.settings-storage-size {
+  font-family: var(--font-mono);
+  font-size: 14px;
 }
 
 .settings-label {
@@ -1530,12 +1564,6 @@ main {
   background: var(--color-mode-pomodoro) !important;
 }
 
-.time-block {
-  cursor: pointer;
-  cursor: grab;
-  transition: all 150ms;
-}
-
 .time-block.drag-over {
   border: 1px dashed var(--color-peel-orange) !important;
   background: var(--color-cream-off) !important;
@@ -1544,6 +1572,7 @@ main {
 .time-block.dragging {
   opacity: 0.4;
   border: 1px dashed var(--color-peel-orange);
+  cursor: grabbing;
 }
 
 /* Linked Todo tag on time block cards */
