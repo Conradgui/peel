@@ -1,0 +1,55 @@
+{
+  "version": "v0.1.0",
+  "high_productivity_day": [
+    "今天 {hours}h {minutes}min，是个好日子。",
+    "{date} 的你 {hours}h {minutes}min。",
+    "今天有 {block_count} 个时间块被认真度过 ✦",
+    "{hours}h {minutes}min。{block_count} 块拼图。",
+    "今天 {block_count} 块时间，{hours}h {minutes}min。",
+    "不错的一天：{hours} 小时 {minutes} 分钟。",
+    "今天把 {hours}h {minutes}min 投入到了正事上。",
+    "一天 {block_count} 块，{hours}h {minutes}min。扎实。"
+  ],
+  "stable_day": [
+    "今天 {hours}h {minutes}min，刚好。",
+    "{block_count} 个时间块，不多不少。",
+    "平稳的一天，{hours}h {minutes}min。",
+    "今天是 {hours}h {minutes}min。也挺好的。",
+    "不急不徐，{hours}h {minutes}min。",
+    "稳定输出：{block_count} 块，{hours}h {minutes}min。"
+  ],
+  "low_productivity_day": [
+    "今天 {hours}h {minutes}min。记下来就好。",
+    "不是每天都要很多的。{hours}h {minutes}min。",
+    "今天轻一点，{hours}h {minutes}min。",
+    "有时候慢下来也是一种进步。",
+    "记录了 {block_count} 块。明天接着来。",
+    "今天 {hours}h {minutes}min，也是真实的一天。"
+  ],
+  "first_day": [
+    "欢迎来到 Peel。从记录开始。",
+    "第一步：知道时间去了哪里。",
+    "剥开假设，看见真相。Peel 准备好了。",
+    "今天是第一天，你开始记录了。"
+  ],
+  "streak_soft_mention": [
+    "已经连续记录 {streak} 天了。",
+    "连续 {streak} 天。不知不觉。",
+    "{streak} 天坚持记录，很棒。",
+    "又多了一天。连续 {streak} 天。"
+  ],
+  "pomodoro_completed": [
+    "🍅 一个番茄完成了。",
+    "刚刚的 25 分钟，用得不错。",
+    "又一个番茄 ✦",
+    "专注 {minutes} 分钟，记录在案。",
+    "番茄钟响了。休息一下？"
+  ],
+  "orange_rain_triggered": [
+    "🍊 橘子雨来了！",
+    "下了一场橘子雨。继续加油。",
+    "你触发了橘子雨 ✦",
+    "橘子雨洒下来了。保持节奏。",
+    "又一场橘子雨，你做得很好。"
+  ]
+}
