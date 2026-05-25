@@ -18,9 +18,12 @@ interface Props {
 }
 
 export function NowPage({ isPomodoro, onRainTrigger, onBreakChange }: Props) {
-  const { state, start, pause, resume, stop } = useTimer()
+  const { state, start, pause, resume, stop, updateLabel } = useTimer()
   const { records, add } = useRecords()
   const { settings } = useSettings()
+
+  const [inputText, setInputText] = useState('')
+  const [selectedTodoId, setSelectedTodoId] = useState<string | null>(null)
 
   const [pomodoroState, setPomodoroState] = useState<PomodoroState | null>(null)
   const pomodoroIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -138,11 +141,21 @@ export function NowPage({ isPomodoro, onRainTrigger, onBreakChange }: Props) {
     <div className="now-page" key="work">
       {!state.isRunning ? (
         <>
-          <TaskInput onSelect={handleSelect} />
+          <TaskInput
+            text={inputText}
+            setText={setInputText}
+            selectedTodoId={selectedTodoId}
+            setSelectedTodoId={setSelectedTodoId}
+            onSelect={handleSelect}
+          />
           <div className="now-empty-hint">
             <button
               className="btn primary start-btn"
-              onClick={() => handleSelect('', null)}
+              onClick={() => {
+                handleSelect(inputText.trim(), selectedTodoId)
+                setInputText('')
+                setSelectedTodoId(null)
+              }}
             >
               开始
             </button>
@@ -152,7 +165,12 @@ export function NowPage({ isPomodoro, onRainTrigger, onBreakChange }: Props) {
         <>
           <div className="task-name">
             {isPomodoro && <span className="pomodoro-icon">🍅</span>}
-            <span>{state.label || '未命名专注'}</span>
+            <input
+              className="task-name-input"
+              value={state.label}
+              onChange={e => updateLabel(e.target.value)}
+              placeholder="未命名专注"
+            />
           </div>
 
           {isPomodoro && pomodoroState ? (

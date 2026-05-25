@@ -2,22 +2,31 @@
 
 import { useState } from 'react'
 import { useTodos } from '@/hooks/useTodos'
-import { formatDate } from '@/domain/time'
 
 interface Props {
+  text: string
+  setText: (t: string) => void
+  selectedTodoId: string | null
+  setSelectedTodoId: (id: string | null) => void
   onSelect: (label: string, todoId: string | null) => void
 }
 
-export function TaskInput({ onSelect }: Props) {
+export function TaskInput({
+  text,
+  setText,
+  selectedTodoId,
+  setSelectedTodoId,
+  onSelect,
+}: Props) {
   const [open, setOpen] = useState(false)
-  const [text, setText] = useState('')
   const { todos } = useTodos()
   const pendingTodos = todos.filter(t => t.status !== 'done')
 
   const handleSubmit = () => {
     if (text.trim()) {
-      onSelect(text.trim(), null)
+      onSelect(text.trim(), selectedTodoId)
       setText('')
+      setSelectedTodoId(null)
       setOpen(false)
     }
   }
@@ -27,7 +36,10 @@ export function TaskInput({ onSelect }: Props) {
       <input
         className="task-input"
         value={text}
-        onChange={e => setText(e.target.value)}
+        onChange={e => {
+          setText(e.target.value)
+          setSelectedTodoId(null)
+        }}
         onFocus={() => setOpen(true)}
         onBlur={() => setTimeout(() => setOpen(false), 200)}
         onKeyDown={e => { if (e.key === 'Enter') handleSubmit() }}
@@ -40,8 +52,8 @@ export function TaskInput({ onSelect }: Props) {
               key={t.id}
               onMouseDown={(e) => {
                 e.preventDefault()
-                onSelect(t.text, t.id)
-                setText('')
+                setText(t.text)
+                setSelectedTodoId(t.id)
                 setOpen(false)
               }}
             >
