@@ -122,6 +122,21 @@ export function TodoList() {
                         ? `已投入 ${formatDuration(actual)}`
                         : ''}
                 </div>
+                {(() => {
+                  const linkedRecords = records.filter(r => r.linkedTodoId === todo.id)
+                  if (linkedRecords.length === 0) return null
+                  return (
+                    <div className="todo-linked-records" onClick={e => e.stopPropagation()}>
+                      {linkedRecords.map(r => (
+                        <div key={r.id} className="todo-linked-record-pill">
+                          <span className="pill-dot" />
+                          <span className="pill-label">{r.label || '未命名专注'}</span>
+                          <span className="pill-duration">{formatDuration(r.duration)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )
+                })()}
               </div>
             </div>
           )
@@ -164,6 +179,7 @@ export function TodoList() {
                   type="text"
                   value={modalText}
                   onChange={e => setModalText(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') handleSaveTodo() }}
                   placeholder="任务名称..."
                   className="modal-input"
                 />
@@ -177,6 +193,7 @@ export function TodoList() {
                     const v = e.target.value
                     setModalEst(v === '' ? '' : parseInt(v, 10))
                   }}
+                  onKeyDown={e => { if (e.key === 'Enter') handleSaveTodo() }}
                   placeholder="无预估时间"
                   className="modal-input"
                 />

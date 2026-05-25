@@ -115,6 +115,7 @@ export function TimeBlockList() {
                   type="text"
                   value={modalLabel}
                   onChange={e => setModalLabel(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') handleSaveRecord() }}
                   placeholder="未命名专注"
                   className="modal-input"
                 />
@@ -124,6 +125,7 @@ export function TimeBlockList() {
                 <select
                   value={modalLinkedTodoId || ''}
                   onChange={e => setModalLinkedTodoId(e.target.value || null)}
+                  onKeyDown={e => { if (e.key === 'Enter') handleSaveRecord() }}
                   className="modal-select"
                 >
                   <option value="">无关联</option>

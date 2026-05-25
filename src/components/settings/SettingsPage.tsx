@@ -41,6 +41,35 @@ export function SettingsPage() {
     URL.revokeObjectURL(url)
   }
 
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (typeof window === 'undefined') return
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      try {
+        const raw = event.target?.result as string
+        const parsed = JSON.parse(raw)
+        
+        if (!parsed.records || !parsed.todos || !parsed.settings) {
+          alert('无效的备份文件：缺少必要的数据结构！')
+          return
+        }
+
+        localStorage.setItem('peel-records', JSON.stringify(parsed.records))
+        localStorage.setItem('peel-todos', JSON.stringify(parsed.todos))
+        localStorage.setItem('peel-settings', JSON.stringify(parsed.settings))
+        
+        alert('导入成功！正在为您重新加载页面...')
+        window.location.reload()
+      } catch (err) {
+        alert('导入失败，解析 JSON 备份文件时出错。')
+      }
+    }
+    reader.readAsText(file)
+  }
+
   const isStorageWarning = storageSize > 4 * 1024 * 1024 // 4MB threshold
 
   return (
@@ -147,7 +176,16 @@ export function SettingsPage() {
           </div>
         )}
 
-        <div className="settings-row justify-end mt-2">
+        <div className="settings-row justify-end mt-2 gap-4">
+          <label className="btn cursor-pointer inline-flex items-center justify-center">
+            导入 JSON 备份
+            <input
+              type="file"
+              accept=".json"
+              style={{ display: 'none' }}
+              onChange={handleImport}
+            />
+          </label>
           <button className="btn primary" onClick={handleExport}>
             导出 JSON 备份
           </button>
