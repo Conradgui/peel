@@ -35,6 +35,7 @@ export function useTimer() {
   })
 
   // Hydrate from localStorage on mount
+  /* eslint-disable react-hooks/set-state-in-effect -- hydration: restores active timer session from localStorage */
   useEffect(() => {
     const saved = loadActiveTimer()
     if (saved) {
@@ -49,6 +50,7 @@ export function useTimer() {
       })
     }
   }, [])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Tick interval — updates elapsed every 250ms when running and not paused
   useEffect(() => {

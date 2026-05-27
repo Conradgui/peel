@@ -31,6 +31,7 @@ function OrangeSVG() {
 export function OrangeRain({ trigger }: { trigger: number }) {
   const [drops, setDrops] = useState<Raindrop[]>([])
 
+  /* eslint-disable react-hooks/set-state-in-effect -- intentional: responds to trigger prop changes for animation */
   useEffect(() => {
     if (trigger === 0) return
     const newDrops = generateRain()
@@ -40,6 +41,7 @@ export function OrangeRain({ trigger }: { trigger: number }) {
     }, 8500)
     return () => clearTimeout(cleanup)
   }, [trigger])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   if (drops.length === 0) return null
 

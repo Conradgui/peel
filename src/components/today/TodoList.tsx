@@ -48,10 +48,11 @@ export function TodoList({
         completedAt: undefined,
       })
     } else {
+      const now = Date.now() // eslint-disable-line react-hooks/purity -- called in event handler, not during render
       updateTodo({
         ...todo,
         status: 'done',
-        completedAt: Date.now(),
+        completedAt: now,
       })
     }
   }
@@ -167,10 +168,20 @@ export function TodoList({
               }}
             >
               <div
+                role="checkbox"
+                aria-checked={todo.status === 'done'}
+                tabIndex={0}
                 className={`todo-checkbox ${todo.status === 'done' ? 'done' : ''}`}
                 onClick={(e) => {
                   e.stopPropagation()
                   toggleTodo(todo)
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    toggleTodo(todo)
+                  }
                 }}
               />
               <div
@@ -231,11 +242,11 @@ export function TodoList({
 
       {/* Todo Details & Editing Modal */}
       {editingTodo && (
-        <div className="peel-modal-backdrop" onClick={closeEditModal}>
-          <div className="peel-modal-card" onClick={e => e.stopPropagation()}>
+        <div className="peel-modal-backdrop" tabIndex={-1} ref={el => el?.focus()} onClick={closeEditModal} onKeyDown={e => { if (e.key === 'Escape') closeEditModal() }}>
+          <div className="peel-modal-card" role="dialog" aria-modal="true" aria-label="编辑任务" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <h3>编辑任务</h3>
-              <button className="modal-close" onClick={closeEditModal}>×</button>
+              <button className="modal-close" aria-label="关闭" onClick={closeEditModal}>×</button>
             </div>
             <div className="modal-body">
               <div className="form-group">

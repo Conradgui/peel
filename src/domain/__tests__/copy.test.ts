@@ -26,6 +26,7 @@ describe('pickCopy', () => {
   })
 
   it('returns empty string for unknown category', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- testing invalid enum value
     const result = pickCopy('nonexistent' as any, {})
     expect(result).toBe('')
   })

@@ -12,6 +12,7 @@ export function SettingsPage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Calculate total localStorage size
+  /* eslint-disable react-hooks/set-state-in-effect -- hydration: reads localStorage once on mount */
   useEffect(() => {
     if (typeof window === 'undefined') return
     let totalBytes = 0
@@ -24,6 +25,7 @@ export function SettingsPage() {
     }
     setStorageSize(totalBytes)
   }, [])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleExport = () => {
     if (typeof window === 'undefined') return
@@ -65,7 +67,7 @@ export function SettingsPage() {
         
         alert('导入成功！正在为您重新加载页面...')
         window.location.reload()
-      } catch (err) {
+      } catch {
         alert('导入失败，解析 JSON 备份文件时出错。')
       }
     }

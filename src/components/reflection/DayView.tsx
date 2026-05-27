@@ -13,11 +13,12 @@ interface Props {
   isToday: boolean
 }
 
-export function DayView({ date, records, isToday: isTodayFlag }: Props) {
+export function DayView({ records, isToday: isTodayFlag }: Props) {
   const totalSeconds = computeTotalDuration(records)
   const pomodoroCount = countByTag(records, 'pomodoro')
   const recentlyUsedRef = useRef<string[]>([])
 
+  /* eslint-disable react-hooks/refs -- intentional: recentlyUsedRef tracks copy rotation, read in useMemo is safe */
   const quote = useMemo(() => {
     if (records.length === 0 && isTodayFlag) {
       return pickCopy('first_day', {}, recentlyUsedRef.current)
@@ -30,6 +31,7 @@ export function DayView({ date, records, isToday: isTodayFlag }: Props) {
     }
     return pickCopy(category, ctx, recentlyUsedRef.current)
   }, [records, totalSeconds, isTodayFlag])
+  /* eslint-enable react-hooks/refs */
 
   return (
     <>

@@ -13,6 +13,7 @@ import { formatDate } from '@/domain/time'
 import type { Todo } from '@/domain/types'
 
 export function useTodos(date?: string) {
+  // eslint-disable-next-line react-hooks/purity -- Date.now() is stable within a single render; used for default date
   const targetDate = date ?? formatDate(Date.now())
   const [todos, setTodos] = useState<Todo[]>([])
 
@@ -20,9 +21,11 @@ export function useTodos(date?: string) {
     setTodos(getTodosByDate(targetDate))
   }, [targetDate])
 
+  /* eslint-disable react-hooks/set-state-in-effect -- hydration: reads localStorage on mount/date change */
   useEffect(() => {
     refresh()
   }, [refresh])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const addTodo = useCallback((text: string, estimatedDuration?: number) => {
     const todo = storageAddTodo(text, targetDate, estimatedDuration)

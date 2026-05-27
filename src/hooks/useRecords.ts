@@ -6,6 +6,7 @@ import { formatDate, daysAgo } from '@/domain/time'
 import type { Record } from '@/domain/types'
 
 export function useRecords(date?: string) {
+  // eslint-disable-next-line react-hooks/purity -- Date.now() is stable within a single render; used for default date
   const targetDate = date ?? formatDate(Date.now())
   const [records, setRecords] = useState<Record[]>([])
 
@@ -13,9 +14,11 @@ export function useRecords(date?: string) {
     setRecords(getRecordsByDate(targetDate))
   }, [targetDate])
 
+  /* eslint-disable react-hooks/set-state-in-effect -- hydration: reads localStorage on mount/date change */
   useEffect(() => {
     refresh()
   }, [refresh])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const add = useCallback((rec: Record) => {
     addRecord(rec)

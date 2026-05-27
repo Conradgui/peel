@@ -18,7 +18,11 @@ export function getSettings(): Settings {
 
 export function saveSettings(settings: Settings): void {
   if (typeof localStorage === 'undefined') return
-  localStorage.setItem(KEY, JSON.stringify(settings))
+  try {
+    localStorage.setItem(KEY, JSON.stringify(settings))
+  } catch {
+    // quota exceeded — silently fail to prevent app crash
+  }
 }
 
 export function updateSetting<K extends keyof Settings>(

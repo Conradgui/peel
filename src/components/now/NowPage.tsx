@@ -38,6 +38,7 @@ export function NowPage({ isPomodoro, onRainTrigger, onBreakChange }: Props) {
   }, [isBreakActive, onBreakChange])
 
   // Side effect handler for Pomodoro phase completion
+  /* eslint-disable react-hooks/set-state-in-effect -- intentional: signal flag pattern for pomodoro record creation */
   useEffect(() => {
     if (pomodoroState?.shouldCreateRecord) {
       const record = stop('pomodoro')
@@ -49,8 +50,10 @@ export function NowPage({ isPomodoro, onRainTrigger, onBreakChange }: Props) {
       setPomodoroState(prev => prev ? { ...prev, shouldCreateRecord: false } : null)
     }
   }, [pomodoroState?.shouldCreateRecord, stop, add, onRainTrigger])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Pomodoro tick
+  /* eslint-disable react-hooks/exhaustive-deps -- pomodoroState excluded to avoid infinite loop; only phase changes restart the interval */
   useEffect(() => {
     if (!pomodoroState || pomodoroState.phase === 'done') {
       if (pomodoroIntervalRef.current) {
@@ -73,6 +76,7 @@ export function NowPage({ isPomodoro, onRainTrigger, onBreakChange }: Props) {
       }
     }
   }, [pomodoroState?.phase])
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   // Orange rain interval trigger (normal mode)
   useEffect(() => {

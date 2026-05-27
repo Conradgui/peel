@@ -13,10 +13,12 @@ const tabs = [
 
 export function NavSegmented({ value, onChange }: Props) {
   return (
-    <nav className="nav-segmented">
+    <nav className="nav-segmented" role="tablist">
       {tabs.map(tab => (
         <button
           key={tab.key}
+          role="tab"
+          aria-selected={value === tab.key}
           className={value === tab.key ? 'active' : ''}
           onClick={() => onChange(tab.key)}
         >

@@ -137,11 +137,11 @@ export function TimeBlockList({
 
       {/* Time Block Edit Modal */}
       {editingRecord && (
-        <div className="peel-modal-backdrop" onClick={closeEditModal}>
-          <div className="peel-modal-card" onClick={e => e.stopPropagation()}>
+        <div className="peel-modal-backdrop" tabIndex={-1} ref={el => el?.focus()} onClick={closeEditModal} onKeyDown={e => { if (e.key === 'Escape') closeEditModal() }}>
+          <div className="peel-modal-card" role="dialog" aria-modal="true" aria-label="编辑记录" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <h3>编辑记录</h3>
-              <button className="modal-close" onClick={closeEditModal}>×</button>
+              <button className="modal-close" aria-label="关闭" onClick={closeEditModal}>×</button>
             </div>
             <div className="modal-body">
               <div className="form-group">

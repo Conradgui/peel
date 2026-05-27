@@ -1,7 +1,7 @@
 'use client'
 
 import { DayMosaic } from './DayMosaic'
-import { formatDurationLong, daysAgo, formatDate } from '@/domain/time'
+import { formatDurationLong, daysAgo } from '@/domain/time'
 import { computeTotalDuration } from '@/domain/planner'
 import { getRecordsByDate } from '@/storage/recordStorage'
 import { useMemo } from 'react'

@@ -11,7 +11,7 @@ export function TodayPage() {
   const { todos, addTodo, updateTodo, deleteTodo, reorderTodos } = useTodos()
   const { records, update: updateRecord, remove: removeRecord, reorderRecords, getLast7Days } = useRecords()
 
-  const recentRecords = useMemo(() => getLast7Days(), [records, getLast7Days])
+  const recentRecords = useMemo(() => getLast7Days(), [getLast7Days])
 
   return (
     <div className="today-page">

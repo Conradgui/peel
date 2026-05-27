@@ -20,7 +20,11 @@ function read(): RecordsByDate {
 
 function write(data: RecordsByDate): void {
   if (typeof localStorage === 'undefined') return
-  localStorage.setItem(KEY, JSON.stringify(data))
+  try {
+    localStorage.setItem(KEY, JSON.stringify(data))
+  } catch {
+    // quota exceeded — silently fail to prevent app crash
+  }
 }
 
 export function addRecord(rec: Record): void {
