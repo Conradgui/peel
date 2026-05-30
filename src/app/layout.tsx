@@ -1,38 +1,26 @@
-import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
 import { ServiceWorker注册 } from "@/components/shell/ServiceWorker注册";
 import "./globals.css";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains-mono",
-  display: "swap",
-});
+export const viewport: Viewport = {
+  themeColor: "#FB923C",
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+};
 
 export const metadata: Metadata = {
   title: "Peel",
   description: "Peel back the assumptions about your time.",
-  manifest: "/manifest.json",
-  themeColor: "#FB923C",
+  manifest: "/peel/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "Peel",
   },
   icons: {
-    icon: "/icon-192.png",
-    apple: "/icon-192.png",
-  },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
+    icon: "/peel/icon-192.png",
+    apple: "/peel/icon-192.png",
   },
 };
 
@@ -42,10 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="zh-CN"
-      className={`${inter.variable} ${jetbrainsMono.variable}`}
-    >
+    <html lang="zh-CN">
       <body>
         {children}
         <ServiceWorker注册 />

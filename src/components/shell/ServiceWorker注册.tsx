@@ -5,7 +5,7 @@ import { useEffect } from 'react'
 export function ServiceWorker注册() {
   useEffect(() => {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => {
+      navigator.serviceWorker.register('/peel/sw.js').catch(() => {
         // SW registration failed — app works fine without it
       })
     }

@@ -26,6 +26,20 @@ describe('formatDate', () => {
     const ts = new Date(2026, 0, 5, 12, 0, 0).getTime()
     expect(formatDate(ts)).toBe('2026-01-05')
   })
+
+  it('respects dayBoundaryHour settings for formatting dates', () => {
+    localStorage.setItem('peel-settings', JSON.stringify({ dayBoundaryHour: 3 }))
+    
+    // May 18, 02:30 AM. With dayBoundaryHour = 3, it should be categorized as May 17.
+    const tsBeforeBoundary = new Date(2026, 4, 18, 2, 30, 0).getTime()
+    expect(formatDate(tsBeforeBoundary)).toBe('2026-05-17')
+    
+    // May 18, 03:01 AM. With dayBoundaryHour = 3, it should be categorized as May 18.
+    const tsAfterBoundary = new Date(2026, 4, 18, 3, 1, 0).getTime()
+    expect(formatDate(tsAfterBoundary)).toBe('2026-05-18')
+
+    localStorage.removeItem('peel-settings')
+  })
 })
 
 describe('formatDuration', () => {

@@ -16,6 +16,7 @@ export interface Record {
   notes?: string
   createdAt: number
   updatedAt: number
+  channel?: 'work' | 'growth' | 'life' | null
 }
 
 /**
@@ -29,6 +30,7 @@ export interface Todo {
   date: string                // 'YYYY-MM-DD'
   createdAt: number
   completedAt?: number
+  channel?: 'work' | 'growth' | 'life' | null
 }
 
 /**
@@ -40,6 +42,7 @@ export interface Settings {
   pomodoroWork: number    // minutes
   pomodoroBreak: number   // minutes
   pomodoroCycleCount: number
+  dayBoundaryHour: number // hours, 0-23
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -48,6 +51,7 @@ export const DEFAULT_SETTINGS: Settings = {
   pomodoroWork: 25,
   pomodoroBreak: 5,
   pomodoroCycleCount: 4,
+  dayBoundaryHour: 0,
 }
 
 /**
@@ -67,3 +71,4 @@ export interface TimerSession {
 export function createId(prefix: string): string {
   return `${prefix}_${Math.random().toString(36).slice(2, 10)}_${Date.now().toString(36)}`
 }
+

@@ -74,6 +74,23 @@ export function SettingsPage() {
     reader.readAsText(file)
   }
 
+  const handleClearCache = () => {
+    if (typeof window === 'undefined') return
+    const confirmed = window.confirm('确定要清除所有本地缓存的数据吗？此操作将清空所有专注记录、待办计划和设置，且无法恢复！')
+    if (confirmed) {
+      const keysToRemove: string[] = []
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i)
+        if (key && key.startsWith('peel-')) {
+          keysToRemove.push(key)
+        }
+      }
+      keysToRemove.forEach(k => localStorage.removeItem(k))
+      alert('本地缓存已完全清除，正在重新加载页面...')
+      window.location.reload()
+    }
+  }
+
   const isStorageWarning = storageSize > 4 * 1024 * 1024 // 4MB threshold
 
   return (
@@ -123,6 +140,31 @@ export function SettingsPage() {
             value={settings.pomodoroCycleCount}
             onChange={e => update('pomodoroCycleCount', Math.max(1, parseInt(e.target.value) || 1))}
           />
+        </div>
+      </div>
+
+      {/* Time and Day Settings */}
+      <div className="settings-section">
+        <h2 className="settings-section-title">📅 日程与时间偏置</h2>
+        
+        <div className="settings-row">
+          <label className="settings-label" htmlFor="day-boundary">自定义日界线 (凌晨)</label>
+          <select
+            id="day-boundary"
+            className="settings-select"
+            value={settings.dayBoundaryHour}
+            onChange={e => update('dayBoundaryHour', parseInt(e.target.value, 10))}
+          >
+            <option value="0">凌晨 0 点 (默认)</option>
+            <option value="1">凌晨 1 点</option>
+            <option value="2">凌晨 2 点</option>
+            <option value="3">凌晨 3 点</option>
+            <option value="4">凌晨 4 点</option>
+            <option value="5">凌晨 5 点</option>
+          </select>
+        </div>
+        <div style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', lineHeight: '1.4', marginTop: '-4px' }}>
+          设置您的一天何时结束。如果您经常学习或写代码到深夜，设置例如“凌晨 3 点”可以将半夜的记录归入前一天，避免您的努力跨天碎裂。
         </div>
       </div>
 
@@ -180,19 +222,24 @@ export function SettingsPage() {
           </div>
         )}
 
-        <div className="settings-row actions">
-          <input
-            type="file"
-            ref={fileInputRef}
-            accept=".json"
-            style={{ display: 'none' }}
-            onChange={handleImport}
-          />
-          <button className="btn primary" onClick={() => fileInputRef.current?.click()}>
-            导入 JSON 备份
-          </button>
-          <button className="btn primary" onClick={handleExport}>
-            导出 JSON 备份
+        <div className="settings-row actions" style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <input
+              type="file"
+              ref={fileInputRef}
+              accept=".json"
+              style={{ display: 'none' }}
+              onChange={handleImport}
+            />
+            <button className="btn primary" onClick={() => fileInputRef.current?.click()}>
+              导入 JSON 备份
+            </button>
+            <button className="btn primary" onClick={handleExport}>
+              导出 JSON 备份
+            </button>
+          </div>
+          <button className="btn destructive" onClick={handleClearCache}>
+            清除本地缓存
           </button>
         </div>
       </div>

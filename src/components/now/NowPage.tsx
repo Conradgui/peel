@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useTimer } from '@/hooks/useTimer'
-import { useRecords } from '@/hooks/useRecords'
+import type { useTimer } from '@/hooks/useTimer'
+import type { useRecords } from '@/hooks/useRecords'
+import type { useTodos } from '@/hooks/useTodos'
 import { useSettings } from '@/hooks/useSettings'
 import { TimerDisplay } from './TimerDisplay'
 import { TaskInput } from './TaskInput'
@@ -15,11 +16,22 @@ interface Props {
   isPomodoro: boolean
   onRainTrigger: () => void
   onBreakChange?: (isBreak: boolean) => void
+  timer: ReturnType<typeof useTimer>
+  todos: ReturnType<typeof useTodos>
+  records: ReturnType<typeof useRecords>
 }
 
-export function NowPage({ isPomodoro, onRainTrigger, onBreakChange }: Props) {
-  const { state, start, pause, resume, stop, updateLabel } = useTimer()
-  const { records, add } = useRecords()
+export function NowPage({
+  isPomodoro,
+  onRainTrigger,
+  onBreakChange,
+  timer,
+  todos,
+  records: recordsHook,
+}: Props) {
+  const { state, start, pause, resume, stop, updateLabel } = timer
+  const { records, add } = recordsHook
+
   const { settings } = useSettings()
 
   const [inputText, setInputText] = useState('')
@@ -30,6 +42,29 @@ export function NowPage({ isPomodoro, onRainTrigger, onBreakChange }: Props) {
   const rainAccumRef = useRef(0) // accumulated seconds for orange rain trigger
 
   const todayTotal = computeTotalDuration(records)
+
+  // Smooth Transition State
+  const [viewState, setViewState] = useState<'input' | 'timer'>(state.isRunning ? 'timer' : 'input')
+  const [isTransitioning, setIsTransitioning] = useState(false)
+
+  // Sync viewState with state.isRunning with visual transition
+  useEffect(() => {
+    if (state.isRunning && viewState === 'input') {
+      setIsTransitioning(true)
+      const t = setTimeout(() => {
+        setViewState('timer')
+        setIsTransitioning(false)
+      }, 250)
+      return () => clearTimeout(t)
+    } else if (!state.isRunning && viewState === 'timer') {
+      setIsTransitioning(true)
+      const t = setTimeout(() => {
+        setViewState('input')
+        setIsTransitioning(false)
+      }, 250)
+      return () => clearTimeout(t)
+    }
+  }, [state.isRunning, viewState])
 
   // Sync break state with parent
   const isBreakActive = pomodoroState?.phase === 'break'
@@ -147,70 +182,104 @@ export function NowPage({ isPomodoro, onRainTrigger, onBreakChange }: Props) {
     )
   }
 
+  const isExiting = isTransitioning
+  const transitionClass = isExiting ? 'now-fade-out' : 'now-fade-in'
+
   return (
-    <div className="now-page" key="work">
-      {!state.isRunning ? (
-        <>
-          <TaskInput
-            text={inputText}
-            setText={setInputText}
-            selectedTodoId={selectedTodoId}
-            setSelectedTodoId={setSelectedTodoId}
-            onSelect={handleSelect}
-          />
-          <div className="now-empty-hint">
-            <button
-              className="btn primary start-btn"
-              onClick={() => {
-                handleSelect(inputText.trim(), selectedTodoId)
-                setInputText('')
-                setSelectedTodoId(null)
-              }}
-            >
-              开始
-            </button>
-          </div>
-        </>
-      ) : (
-        <>
-          <div className="task-name">
-            {isPomodoro && <span className="pomodoro-icon">🍅</span>}
-            <input
-              className="task-name-input"
-              value={state.label}
-              onChange={e => updateLabel(e.target.value)}
-              placeholder="未命名专注"
+    <div className="now-page" key="work" style={{ width: '100%', height: '100%', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+      <div
+        className={`now-state-wrapper ${transitionClass}`}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '32px',
+          width: '100%',
+        }}
+      >
+        {viewState === 'input' ? (
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '32px',
+              width: '100%',
+            }}
+          >
+            <TaskInput
+              text={inputText}
+              setText={setInputText}
+              selectedTodoId={selectedTodoId}
+              setSelectedTodoId={setSelectedTodoId}
+              onSelect={handleSelect}
             />
-          </div>
-
-          {isPomodoro && pomodoroState ? (
-            <TimerDisplay
-              elapsedSeconds={settings.pomodoroWork * 60 - pomodoroState.remaining}
-              isCountdown
-              target={settings.pomodoroWork * 60}
-            />
-          ) : (
-            <TimerDisplay elapsedSeconds={state.elapsedSeconds} />
-          )}
-
-          {isPomodoro && (
-            <div className="timer-target">
-              {settings.pomodoroWork}:00 倒计时
+            <div className="now-empty-hint">
+              <button
+                className="btn primary start-btn"
+                onClick={() => {
+                  handleSelect(inputText.trim(), selectedTodoId)
+                  setInputText('')
+                  setSelectedTodoId(null)
+                }}
+              >
+                开始
+              </button>
             </div>
-          )}
-
-          <div className="timer-controls">
-            {!state.isPaused ? (
-              <button className="btn" onClick={pause}>⏸&nbsp;&nbsp;暂停</button>
-            ) : (
-              <button className="btn" onClick={resume}>▶&nbsp;&nbsp;继续</button>
-            )}
-            <button className="btn primary" onClick={handleStop}>
-              ⏹&nbsp;&nbsp;结束
-            </button>
           </div>
-        </>
-      )}
+        ) : (
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '32px',
+              width: '100%',
+            }}
+          >
+            <div className="task-name">
+              {isPomodoro && <span className="pomodoro-icon">🍅</span>}
+              <input
+                className="task-name-input"
+                value={state.label}
+                onChange={e => updateLabel(e.target.value)}
+                placeholder="未命名专注"
+              />
+            </div>
+
+            {isPomodoro && pomodoroState ? (
+              <TimerDisplay
+                elapsedSeconds={settings.pomodoroWork * 60 - pomodoroState.remaining}
+                isCountdown
+                target={settings.pomodoroWork * 60}
+              />
+            ) : (
+              <TimerDisplay elapsedSeconds={state.elapsedSeconds} />
+            )}
+
+            {isPomodoro && (
+              <div className="timer-target">
+                {settings.pomodoroWork}:00 倒计时
+              </div>
+            )}
+
+            <div className="timer-controls">
+              {!state.isPaused ? (
+                <button className="btn" onClick={pause}>⏸&nbsp;&nbsp;暂停</button>
+              ) : (
+                <button className="btn" onClick={resume}>▶&nbsp;&nbsp;继续</button>
+              )}
+              <button className="btn primary" onClick={handleStop}>
+                ⏹&nbsp;&nbsp;结束
+              </button>
+            </div>
+
+            <div style={{ marginTop: '16px', fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
+              💡 脑中闪过杂念？按 <kbd style={{ padding: '2px 6px', background: 'var(--color-cream-off)', border: '1px solid var(--color-peel-border)', borderRadius: '4px', fontSize: '11px', fontFamily: 'var(--font-mono)' }}>Shift + D</kbd> 记录，不中断专注。
+            </div>
+          </div>
+        )}
+      </div>
 
       <div className="now-footer">
         今天已专注 <strong>{formatDurationLong(todayTotal)}</strong>{' '}

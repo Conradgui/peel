@@ -5,8 +5,23 @@
  * Format a timestamp to 'YYYY-MM-DD' in local timezone.
  * Used as the localStorage key for records and todos.
  */
+import { getSettings } from '@/storage/settingsStorage'
+
+/**
+ * Format a timestamp to 'YYYY-MM-DD' in local timezone.
+ * Shunted by the user-defined dayBoundaryHour.
+ * Used as the localStorage key for records and todos.
+ */
 export function formatDate(timestamp: number): string {
-  const d = new Date(timestamp)
+  let boundaryHour = 0
+  try {
+    boundaryHour = getSettings().dayBoundaryHour ?? 0
+  } catch {
+    // Fallback if settings are not loaded or in tests
+  }
+
+  const adjustedTimestamp = timestamp - boundaryHour * 3600 * 1000
+  const d = new Date(adjustedTimestamp)
   const y = d.getFullYear()
   const m = String(d.getMonth() + 1).padStart(2, '0')
   const day = String(d.getDate()).padStart(2, '0')

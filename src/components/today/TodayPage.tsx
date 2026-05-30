@@ -1,18 +1,35 @@
 'use client'
 
-import { useMemo } from 'react'
 import { TodoList } from './TodoList'
 import { TimeBlockList } from './TimeBlockList'
 import { HeatmapHourly } from './HeatmapHourly'
-import { useTodos } from '@/hooks/useTodos'
-import { useRecords } from '@/hooks/useRecords'
+import type { Todo, Record } from '@/domain/types'
 
-export function TodayPage() {
-  const { todos, addTodo, updateTodo, deleteTodo, reorderTodos } = useTodos()
-  const { records, update: updateRecord, remove: removeRecord, reorderRecords, getLast7Days } = useRecords()
+interface Props {
+  todos: Todo[]
+  records: Record[]
+  addTodo: (text: string, estimatedDuration?: number) => Todo
+  updateTodo: (todo: Todo) => void
+  deleteTodo: (id: string) => void
+  updateRecord: (record: Record) => void
+  reorderTodos: (todos: Todo[]) => void
+  removeRecord: (id: string) => void
+  reorderRecords: (records: Record[]) => void
+  recentRecords: Record[]
+}
 
-  const recentRecords = useMemo(() => getLast7Days(), [getLast7Days])
-
+export function TodayPage({
+  todos,
+  records,
+  addTodo,
+  updateTodo,
+  deleteTodo,
+  updateRecord,
+  reorderTodos,
+  removeRecord,
+  reorderRecords,
+  recentRecords,
+}: Props) {
   return (
     <div className="today-page">
       <div className="today-col">
